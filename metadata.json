@@ -1,0 +1,6 @@
+{
+  "name": "Escape del Volcán",
+  "description": "Juego de acción y plataformas de escalada vertical donde debes escapar de la lava hirviente esquivando rocas para alcanzar la cima.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
