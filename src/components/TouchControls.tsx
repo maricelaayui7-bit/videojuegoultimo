@@ -20,10 +20,10 @@ export const TouchControls: React.FC<TouchControlsProps> = ({ onInput }) => {
     <nav
       id="touch-controls"
       aria-label="Controles táctiles en pantalla"
-      className="absolute bottom-6 left-0 right-0 z-30 px-6 flex items-center justify-between pointer-events-none select-none"
+      className="absolute bottom-4 left-0 right-0 z-30 px-4 flex items-center justify-between pointer-events-none select-none"
     >
       {/* Directional Pad (Left / Right) */}
-      <div className="flex items-center gap-4 pointer-events-auto">
+      <div className="flex items-center gap-2.5 pointer-events-auto">
         <button
           id="btnLeft"
           type="button"
@@ -35,9 +35,9 @@ export const TouchControls: React.FC<TouchControlsProps> = ({ onInput }) => {
           onMouseDown={handleTouchStart('left')}
           onMouseUp={handleTouchEnd('left')}
           onMouseLeave={handleTouchEnd('left')}
-          className="w-18 h-18 sm:w-20 sm:h-20 bg-orange-600/40 border-4 border-orange-600 rounded-full flex items-center justify-center active:bg-orange-600 active:scale-95 transition-all text-white shadow-xl shadow-black/70 backdrop-blur-sm touch-none cursor-pointer"
+          className="w-13 h-13 sm:w-14 sm:h-14 bg-orange-600/35 border-2 border-orange-500/90 rounded-full flex items-center justify-center active:bg-orange-500 active:scale-95 transition-all text-white shadow-lg shadow-black/70 backdrop-blur-sm touch-none cursor-pointer"
         >
-          <ArrowLeft className="w-8 h-8 pointer-events-none text-white font-black" />
+          <ArrowLeft className="w-6 h-6 pointer-events-none text-white font-black" />
         </button>
 
         <button
@@ -51,9 +51,9 @@ export const TouchControls: React.FC<TouchControlsProps> = ({ onInput }) => {
           onMouseDown={handleTouchStart('right')}
           onMouseUp={handleTouchEnd('right')}
           onMouseLeave={handleTouchEnd('right')}
-          className="w-18 h-18 sm:w-20 sm:h-20 bg-orange-600/40 border-4 border-orange-600 rounded-full flex items-center justify-center active:bg-orange-600 active:scale-95 transition-all text-white shadow-xl shadow-black/70 backdrop-blur-sm touch-none cursor-pointer"
+          className="w-13 h-13 sm:w-14 sm:h-14 bg-orange-600/35 border-2 border-orange-500/90 rounded-full flex items-center justify-center active:bg-orange-500 active:scale-95 transition-all text-white shadow-lg shadow-black/70 backdrop-blur-sm touch-none cursor-pointer"
         >
-          <ArrowRight className="w-8 h-8 pointer-events-none text-white font-black" />
+          <ArrowRight className="w-6 h-6 pointer-events-none text-white font-black" />
         </button>
       </div>
 
@@ -70,10 +70,10 @@ export const TouchControls: React.FC<TouchControlsProps> = ({ onInput }) => {
           onMouseDown={handleTouchStart('jump')}
           onMouseUp={handleTouchEnd('jump')}
           onMouseLeave={handleTouchEnd('jump')}
-          className="w-20 h-20 sm:w-24 sm:h-24 bg-orange-600/60 border-4 border-orange-500 rounded-full flex flex-col items-center justify-center text-white shadow-xl shadow-orange-950/70 backdrop-blur-sm active:bg-orange-400 active:scale-95 transition-all touch-none cursor-pointer"
+          className="w-15 h-15 sm:w-16 sm:h-16 bg-orange-600/50 border-2 border-orange-400 rounded-full flex flex-col items-center justify-center text-white shadow-lg shadow-orange-950/70 backdrop-blur-sm active:bg-orange-500 active:scale-95 transition-all touch-none cursor-pointer"
         >
-          <ArrowUp className="w-8 h-8 pointer-events-none drop-shadow font-black" />
-          <span className="text-[10px] tracking-wider uppercase font-black drop-shadow">SALTAR</span>
+          <ArrowUp className="w-6 h-6 pointer-events-none drop-shadow font-black" />
+          <span className="text-[9px] tracking-wider uppercase font-black drop-shadow">SALTAR</span>
         </button>
       </div>
     </nav>

@@ -138,7 +138,7 @@ export default function App() {
   return (
     <main
       id="game-root-container"
-      className="relative w-screen h-screen overflow-hidden bg-[#120505] flex items-center justify-center select-none"
+      className="relative w-screen h-screen overflow-hidden bg-[#120505] flex items-center justify-center p-0 md:p-3 select-none"
     >
       {/* Screen Reader ARIA Live Region for Accessibility */}
       <div
@@ -150,11 +150,11 @@ export default function App() {
         {announcement}
       </div>
 
-      {/* Geometric Balance Game Stage Area */}
+      {/* Normal Proportional Game Stage Area */}
       <div
         ref={containerRef}
         id="game-wrapper"
-        className="relative w-full h-full max-w-[1024px] max-h-[768px] mx-auto bg-[#1a0a0a] overflow-hidden select-none flex flex-col shadow-2xl border-stone-900 md:border-2"
+        className="relative w-full h-full max-w-[800px] max-h-[600px] md:aspect-[4/3] mx-auto bg-[#1a0a0a] overflow-hidden select-none flex flex-col shadow-2xl border-stone-800 md:border-2 md:rounded-xl"
       >
         {/* HTML5 Canvas */}
         <canvas
