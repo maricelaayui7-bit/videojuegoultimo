@@ -1,7 +1,7 @@
 import React from 'react';
 import { ArrowRight, RotateCcw, CheckCircle2, Sparkles, Gem } from 'lucide-react';
 import { GameStats, LevelConfig } from '../types';
-import volcanoLogo from '../assets/images/volcano_drawing_logo_1788773415330.jpg';
+import heroLogo from '../assets/images/explorer_volcano_hero_1788875674693.jpg';
 
 interface VictoryModalProps {
   isFinalVictory: boolean;
@@ -30,11 +30,11 @@ export const VictoryModal: React.FC<VictoryModalProps> = ({
     >
       <div className="w-full max-w-sm flex flex-col items-center text-center my-auto">
         
-        {/* Volcano Logo Illustration - Full Uncropped */}
+        {/* Explorer Hero Logo Illustration - Full Uncropped */}
         <div className="w-20 h-20 sm:w-24 sm:h-24 mb-2 rounded-2xl overflow-hidden pixel-border-green border-2 border-green-500 bg-black/90 p-1 flex items-center justify-center shadow-[0_0_20px_rgba(34,197,94,0.7)]">
           <img
-            src={volcanoLogo}
-            alt="Escape del Volcán Éxito"
+            src={heroLogo}
+            alt="Explorador Éxito de Escape"
             className="w-full h-full object-contain"
             referrerPolicy="no-referrer"
           />

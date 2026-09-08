@@ -95,4 +95,5 @@ export interface GameStats {
   currentLevel: number;
   gemsCollected: number;
   rocksEvaded: number;
+  lavaCountdown?: number; // seconds remaining before lava starts rising (3s countdown)
 }

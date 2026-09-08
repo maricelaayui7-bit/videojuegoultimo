@@ -35,6 +35,11 @@ export class GameEngine {
   private gemsCollected: number = 0;
   private rocksEvaded: number = 0;
 
+  // 3-second countdown before lava starts rising
+  private lavaDelayTimer: number = 3.0;
+  private lavaAlertFlashTimer: number = 0;
+  private lastBeepSecond: number = -1;
+
   // Controls input state
   private inputState = {
     left: false,
@@ -62,7 +67,10 @@ export class GameEngine {
     const context = canvas.getContext('2d');
     if (!context) throw new Error('Could not get canvas 2D context');
     this.ctx = context;
-    this.renderer = new GameRenderer(this.ctx, canvas.width, canvas.height);
+
+    const scale = canvas.width > 0 ? canvas.width / this.worldWidth : 1;
+    const initialVHeight = scale > 0 ? canvas.height / scale : 600;
+    this.renderer = new GameRenderer(this.ctx, this.worldWidth, initialVHeight);
 
     this.onStateChange = callbacks.onStateChange;
     this.onStatsUpdate = callbacks.onStatsUpdate;
@@ -70,14 +78,14 @@ export class GameEngine {
 
     this.currentLevel = LEVELS[0];
 
-    // Initial player state
+    // Initial player state (larger, clearer dimensions for prominent visibility)
     this.player = {
-      x: this.worldWidth / 2 - 18,
+      x: this.worldWidth / 2 - 19,
       y: this.currentLevel.worldHeight - 120,
       vx: 0,
       vy: 0,
-      width: 36,
-      height: 48,
+      width: 38,
+      height: 50,
       isGrounded: true,
       facing: 'right',
       invulnerableTimer: 0,
@@ -92,10 +100,21 @@ export class GameEngine {
     this.render(); // initial frame
   }
 
+  public getVirtualHeight(): number {
+    const scale = this.canvas.width > 0 ? this.canvas.width / this.worldWidth : 1;
+    return scale > 0 ? this.canvas.height / scale : 600;
+  }
+
   public setCanvasSize(width: number, height: number) {
     this.canvas.width = width;
     this.canvas.height = height;
-    this.renderer.resize(width, height);
+    const scale = width > 0 ? width / this.worldWidth : 1;
+    const vHeight = scale > 0 ? height / scale : 600;
+    this.renderer.resize(this.worldWidth, vHeight);
+    if (this.status === 'start') {
+      this.cameraY = Math.max(0, this.currentLevel.worldHeight - vHeight);
+      this.render();
+    }
   }
 
   // Keyboard controls
@@ -171,7 +190,7 @@ export class GameEngine {
     }
 
     // Reset player position at bottom ground platform
-    this.player.x = this.worldWidth / 2 - 18;
+    this.player.x = this.worldWidth / 2 - 19;
     this.player.y = worldH - 120;
     this.player.vx = 0;
     this.player.vy = 0;
@@ -179,9 +198,15 @@ export class GameEngine {
     this.player.invulnerableTimer = 0;
     this.player.isAlive = true;
 
-    // Reset Lava below ground
+    // Reset Lava below ground and position camera to clearly frame player and ground
+    const vHeight = this.getVirtualHeight();
     this.lavaY = worldH + 60;
-    this.cameraY = worldH - this.canvas.height;
+    this.cameraY = Math.max(0, worldH - vHeight);
+
+    // Reset 3-second lava delay countdown
+    this.lavaDelayTimer = 3.0;
+    this.lavaAlertFlashTimer = 0;
+    this.lastBeepSecond = -1;
 
     this.rocks = [];
     this.collectibles = [];
@@ -292,8 +317,11 @@ export class GameEngine {
   public startGame() {
     this.status = 'playing';
     this.lastTime = performance.now();
+    this.lavaDelayTimer = 3.0;
+    this.lavaAlertFlashTimer = 0;
+    this.lastBeepSecond = -1;
     this.onStateChange(this.status);
-    this.onAnnouncement(`¡Nivel ${this.currentLevel.levelNumber}: ${this.currentLevel.name} iniciado! Sube rápido antes de que la lava te alcance.`);
+    this.onAnnouncement(`¡Nivel ${this.currentLevel.levelNumber}: ${this.currentLevel.name}! La lava empezará a subir en 3 segundos. ¡Prepárate!`);
 
     if (!this.animationFrameId) {
       this.loop(this.lastTime);
@@ -445,8 +473,29 @@ export class GameEngine {
       p.isGrounded = false;
     }
 
-    // 5. Lava Rising
-    this.lavaY -= this.currentLevel.lavaSpeed * dt;
+    // 5. Lava Delay Countdown & Rising
+    if (this.lavaDelayTimer > 0) {
+      const currentIntSec = Math.ceil(this.lavaDelayTimer);
+      if (currentIntSec !== this.lastBeepSecond && currentIntSec >= 1 && currentIntSec <= 3) {
+        this.lastBeepSecond = currentIntSec;
+        sound.playCountdownBeep(false);
+      }
+
+      this.lavaDelayTimer = Math.max(0, this.lavaDelayTimer - dt);
+
+      if (this.lavaDelayTimer === 0) {
+        this.lavaAlertFlashTimer = 1.0;
+        sound.playCountdownBeep(true);
+        sound.playLavaSizzle();
+        this.onAnnouncement('¡La lava ha comenzado a subir! ¡Escala rápido!');
+      }
+    } else {
+      // Lava actively rises
+      this.lavaY -= this.currentLevel.lavaSpeed * dt;
+      if (this.lavaAlertFlashTimer > 0) {
+        this.lavaAlertFlashTimer = Math.max(0, this.lavaAlertFlashTimer - dt);
+      }
+    }
 
     // Lava Spurt / Bubble Particles
     this.lavaBubbleTimer += dt;
@@ -472,11 +521,13 @@ export class GameEngine {
       this.handleLavaDamage();
     }
 
-    // 7. Falling Rocks Spawning & Update
-    this.rockTimer += dt;
-    if (this.rockTimer >= this.currentLevel.rockSpawnRate) {
-      this.rockTimer = 0;
-      this.spawnFallingRock();
+    // 7. Falling Rocks Spawning & Update (spawns once lava starts rising)
+    if (this.lavaDelayTimer <= 0) {
+      this.rockTimer += dt;
+      if (this.rockTimer >= this.currentLevel.rockSpawnRate) {
+        this.rockTimer = 0;
+        this.spawnFallingRock();
+      }
     }
 
     // Update rocks
@@ -515,7 +566,8 @@ export class GameEngine {
       }
 
       // Evaded rock successfully (passed below player and camera)
-      if (r.y > this.cameraY + this.canvas.height + 80) {
+      const vHeight = this.getVirtualHeight();
+      if (r.y > this.cameraY + vHeight + 80) {
         this.rocksEvaded++;
         this.totalScore += 25;
         this.rocks.splice(i, 1);
@@ -570,12 +622,13 @@ export class GameEngine {
       this.maxAltitudeReached = currentAltitude;
     }
 
-    // 11. Smooth Camera Tracking (keep player in upper-middle)
-    const targetCameraY = p.y - this.canvas.height * 0.58;
+    // 11. Smooth Camera Tracking (keep player comfortably centered and clearly visible)
+    const currentVHeight = this.getVirtualHeight();
+    const targetCameraY = p.y - currentVHeight * 0.6;
     this.cameraY += (targetCameraY - this.cameraY) * 0.12;
 
-    // Clamp camera
-    const maxCamY = this.currentLevel.worldHeight - this.canvas.height;
+    // Clamp camera within world bounds
+    const maxCamY = this.currentLevel.worldHeight - currentVHeight;
     if (this.cameraY > maxCamY) this.cameraY = maxCamY;
     if (this.cameraY < 0) this.cameraY = 0;
 
@@ -709,6 +762,7 @@ export class GameEngine {
       currentLevel: this.currentLevel.levelNumber,
       gemsCollected: this.gemsCollected,
       rocksEvaded: this.rocksEvaded,
+      lavaCountdown: this.lavaDelayTimer,
     });
   }
 
@@ -800,6 +854,11 @@ export class GameEngine {
 
     // 8. Rising Lava
     this.renderer.drawLava(this.lavaY, this.cameraY, this.gameTime);
+
+    // 9. 3-Second Lava Delay Countdown & Rising Alert
+    if (this.status === 'playing' && (this.lavaDelayTimer > 0 || this.lavaAlertFlashTimer > 0)) {
+      this.renderer.drawLavaCountdown(this.lavaDelayTimer, this.lavaAlertFlashTimer);
+    }
 
     this.ctx.restore();
   }

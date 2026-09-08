@@ -1,7 +1,7 @@
 import React from 'react';
 import { Heart, Volume2, VolumeX, RotateCcw, Flame, Mountain } from 'lucide-react';
 import { GameStats } from '../types';
-import volcanoLogo from '../assets/images/volcano_drawing_logo_1788773415330.jpg';
+import heroLogo from '../assets/images/explorer_volcano_hero_1788875674693.jpg';
 
 interface HUDProps {
   stats: GameStats;
@@ -40,8 +40,8 @@ export const HUD: React.FC<HUDProps> = ({
           <div className="flex items-center justify-center bg-black/85 border border-orange-500 p-0.5 shadow-md w-9 h-9 sm:w-10 sm:h-10 overflow-hidden rounded-md">
             <img
               id="hud-logo-icon"
-              src={volcanoLogo}
-              alt="Logo Escape del Volcán"
+              src={heroLogo}
+              alt="Explorador y Volcán"
               className="w-full h-full object-contain"
               referrerPolicy="no-referrer"
             />
@@ -87,15 +87,19 @@ export const HUD: React.FC<HUDProps> = ({
           {/* Lava alert indicator */}
           <div
             className={`bg-black/85 border px-2 py-1 flex items-center gap-1 transition-all duration-300 shadow-md ${
-              isLavaClose
+              stats.lavaCountdown && stats.lavaCountdown > 0
+                ? 'border-amber-400 bg-amber-950/90 text-amber-300 animate-pulse shadow-amber-500/30'
+                : isLavaClose
                 ? 'border-red-600 bg-red-950/80 text-white animate-pulse shadow-red-600/40'
                 : 'border-orange-600/70 text-orange-400'
             }`}
-            title="Distancia a la lava"
+            title={stats.lavaCountdown && stats.lavaCountdown > 0 ? 'Cuenta regresiva para la lava' : 'Distancia a la lava'}
           >
-            <Flame className="w-3.5 h-3.5 text-orange-500" />
+            <Flame className={`w-3.5 h-3.5 ${stats.lavaCountdown && stats.lavaCountdown > 0 ? 'text-amber-400 animate-bounce' : 'text-orange-500'}`} />
             <span className="text-xs font-black font-mono uppercase tracking-tight">
-              Lava: {lavaDistance}m
+              {stats.lavaCountdown && stats.lavaCountdown > 0
+                ? `Lava en: ${Math.max(1, Math.ceil(stats.lavaCountdown))}s`
+                : `Lava: ${lavaDistance}m`}
             </span>
           </div>
         </div>

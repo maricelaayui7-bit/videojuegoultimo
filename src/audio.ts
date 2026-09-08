@@ -304,6 +304,51 @@ class SoundSynthesizer {
       // Ignore
     }
   }
+
+  // 3-second countdown warning beep and alert siren
+  public playCountdownBeep(isFinal: boolean = false) {
+    if (this.isMuted) return;
+    this.initContext();
+    if (!this.ctx) return;
+
+    try {
+      const now = this.ctx.currentTime;
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+
+      if (!isFinal) {
+        // High crisp warning beep for 3, 2, 1
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(620, now);
+        osc.frequency.setValueAtTime(780, now + 0.04);
+
+        gain.gain.setValueAtTime(0.2, now);
+        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.13);
+
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+
+        osc.start(now);
+        osc.stop(now + 0.14);
+      } else {
+        // Final eruption siren alert when lava begins rising
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(380, now);
+        osc.frequency.exponentialRampToValueAtTime(840, now + 0.28);
+
+        gain.gain.setValueAtTime(0.24, now);
+        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.32);
+
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+
+        osc.start(now);
+        osc.stop(now + 0.32);
+      }
+    } catch {
+      // Ignore
+    }
+  }
 }
 
 export const sound = new SoundSynthesizer();

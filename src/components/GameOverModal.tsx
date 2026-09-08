@@ -1,7 +1,7 @@
 import React from 'react';
 import { RotateCcw, Play, Trophy, Mountain, Gem, Zap } from 'lucide-react';
 import { GameStats } from '../types';
-import volcanoLogo from '../assets/images/volcano_drawing_logo_1788773415330.jpg';
+import heroLogo from '../assets/images/explorer_volcano_hero_1788875674693.jpg';
 
 interface GameOverModalProps {
   stats: GameStats;
@@ -24,11 +24,11 @@ export const GameOverModal: React.FC<GameOverModalProps> = ({
     >
       <div className="w-full max-w-sm flex flex-col items-center text-center my-auto">
         
-        {/* Volcano Logo Illustration - Full Uncropped */}
+        {/* Explorer Hero Logo Illustration - Full Uncropped */}
         <div className="w-20 h-20 sm:w-24 sm:h-24 mb-2 rounded-2xl overflow-hidden pixel-border-red border-2 border-red-600 bg-black/90 p-1 flex items-center justify-center shadow-[0_0_20px_rgba(220,38,38,0.7)]">
           <img
-            src={volcanoLogo}
-            alt="Escape del Volcán"
+            src={heroLogo}
+            alt="Explorador y Volcán"
             className="w-full h-full object-contain filter contrast-125"
             referrerPolicy="no-referrer"
           />

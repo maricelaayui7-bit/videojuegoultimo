@@ -1,6 +1,6 @@
 import React from 'react';
-import { Flame, Play, ShieldAlert, Sparkles, Navigation, Heart } from 'lucide-react';
-import volcanoLogo from '../assets/images/volcano_drawing_logo_1788773415330.jpg';
+import { Flame, Play, ShieldAlert, Sparkles, Navigation, Heart, User } from 'lucide-react';
+import heroLogo from '../assets/images/explorer_volcano_hero_1788875674693.jpg';
 
 interface StartModalProps {
   onStart: () => void;
@@ -13,23 +13,29 @@ export const StartModal: React.FC<StartModalProps> = ({ onStart }) => {
       role="dialog"
       aria-labelledby="game-title-word1"
       aria-describedby="game-instructions"
-      className="absolute inset-0 z-40 flex flex-col items-center justify-center p-3 sm:p-5 bg-black/90 select-none overflow-y-auto"
+      className="absolute inset-0 z-40 flex flex-col items-center justify-center p-3 sm:p-5 bg-black/85 backdrop-blur-[2px] select-none overflow-y-auto"
     >
       <div className="w-full max-w-md flex flex-col items-center text-center my-auto">
         
-        {/* Volcano Drawing Logo Emblem - Full Uncropped View */}
-        <div className="relative mb-2.5 flex items-center justify-center">
-          <div className="w-28 h-28 sm:w-32 sm:h-32 rounded-2xl overflow-hidden pixel-border border-2 border-orange-500 bg-black/90 p-1 flex items-center justify-center shadow-[0_0_24px_rgba(249,115,22,0.6)] transform hover:scale-105 transition-transform duration-200">
+        {/* Explorer Person & Volcano Illustration - Full View */}
+        <div className="relative mb-2 flex flex-col items-center justify-center">
+          <div className="w-32 h-32 sm:w-36 sm:h-36 rounded-2xl overflow-hidden pixel-border border-2 border-orange-500 bg-black/95 p-1 flex items-center justify-center shadow-[0_0_28px_rgba(249,115,22,0.7)] transform hover:scale-105 transition-transform duration-200">
             <img
               id="game-logo-image"
-              src={volcanoLogo}
-              alt="Dibujo del Volcán en erupción"
+              src={heroLogo}
+              alt="Ilustración del Explorador Aventurero y el Volcán"
               className="w-full h-full object-contain"
               referrerPolicy="no-referrer"
             />
           </div>
           <div className="absolute -bottom-1 -right-1 bg-black/90 border border-orange-500 rounded-full p-1 shadow-md">
             <Flame className="w-3.5 h-3.5 text-orange-400 animate-pulse" />
+          </div>
+
+          {/* Character Label Badge so the person is explicitly identified */}
+          <div className="mt-2 inline-flex items-center gap-1.5 px-2.5 py-0.5 bg-orange-950/80 border border-orange-500/80 rounded-full text-[11px] font-bold text-amber-300 shadow-sm">
+            <User className="w-3.5 h-3.5 text-orange-400" />
+            <span>Personaje: Explorador Aventurero</span>
           </div>
         </div>
 
@@ -55,8 +61,8 @@ export const StartModal: React.FC<StartModalProps> = ({ onStart }) => {
           <p>
             Usa <span className="text-white font-bold">FLECHAS</span> o <span className="text-white font-bold">A/D</span> para moverte. <span className="text-white font-bold">ESPACIO</span> para saltar.
           </p>
-          <p className="mt-1 text-stone-400 text-[11px] sm:text-xs">
-            Escala las plataformas de piedra y evita la lava hirviente y las rocas en caída.
+          <p className="mt-1 text-stone-300 text-[11px] sm:text-xs">
+            ¡Tienes <span className="text-amber-300 font-bold">3 segundos</span> antes de que la lava empiece a subir! Escala rápido y esquiva las rocas.
           </p>
         </div>
 

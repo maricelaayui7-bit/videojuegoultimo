@@ -472,85 +472,142 @@ export class GameRenderer {
     ctx.save();
     ctx.translate(px + player.width / 2, py + player.height / 2);
 
+    const w = player.width;
+    const h = player.height;
+
+    // 1. Warm radial torch illumination halo around the player person
+    const torchGlow = ctx.createRadialGradient(0, -h / 4, 10, 0, 0, 95);
+    torchGlow.addColorStop(0, 'rgba(254, 215, 170, 0.45)');
+    torchGlow.addColorStop(0.35, 'rgba(249, 115, 22, 0.22)');
+    torchGlow.addColorStop(0.8, 'rgba(234, 88, 12, 0.08)');
+    torchGlow.addColorStop(1, 'rgba(0, 0, 0, 0)');
+    ctx.fillStyle = torchGlow;
+    ctx.beginPath();
+    ctx.arc(0, 0, 95, 0, Math.PI * 2);
+    ctx.fill();
+
+    // 2. High-contrast character rim highlight so the person pops against dark rocks
+    ctx.strokeStyle = 'rgba(251, 191, 36, 0.55)';
+    ctx.lineWidth = 2.5;
+    ctx.beginPath();
+    ctx.roundRect(-w / 2 - 4, -h / 2 - 1, w + 8, h + 5, 8);
+    ctx.stroke();
+
+    // 3. Player Beacon / "TÚ" indicator so the person is 100% visible and unmistakable
+    const markerBob = Math.sin(Date.now() / 220) * 3;
+    const markerY = -h / 2 - 18 + markerBob;
+
+    // Small beacon badge "TÚ"
+    ctx.fillStyle = '#b45309';
+    ctx.beginPath();
+    ctx.roundRect(-10, markerY - 12, 20, 11, 3);
+    ctx.fill();
+    ctx.strokeStyle = '#fef08a';
+    ctx.lineWidth = 1;
+    ctx.stroke();
+    ctx.fillStyle = '#ffffff';
+    ctx.font = 'bold 8px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('TÚ', 0, markerY - 6);
+
+    // Downward pointing arrow
+    ctx.fillStyle = '#fbbf24';
+    ctx.beginPath();
+    ctx.moveTo(0, markerY + 4);
+    ctx.lineTo(-4, markerY);
+    ctx.lineTo(4, markerY);
+    ctx.closePath();
+    ctx.fill();
+
+    // Flip horizontal if facing left
     if (player.facing === 'left') {
       ctx.scale(-1, 1);
     }
 
-    const w = player.width;
-    const h = player.height;
-
     // Shadow on ground when close
     if (player.isGrounded) {
-      ctx.fillStyle = 'rgba(0, 0, 0, 0.4)';
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
       ctx.beginPath();
       ctx.ellipse(0, h / 2 - 2, w / 2, 4, 0, 0, Math.PI * 2);
       ctx.fill();
     }
 
     // Backpack on back
-    ctx.fillStyle = '#78350f'; // Leather brown
+    ctx.fillStyle = '#854d0e'; // Rich leather brown
     ctx.strokeStyle = '#451a03';
     ctx.lineWidth = 1.5;
     ctx.beginPath();
-    ctx.roundRect(-w / 2 - 4, -h / 2 + 12, 8, 18, 3);
+    ctx.roundRect(-w / 2 - 4, -h / 2 + 12, 9, 20, 3);
     ctx.fill();
     ctx.stroke();
 
     // Bedroll / sleeping mat on top of backpack
-    ctx.fillStyle = '#15803d';
-    ctx.fillRect(-w / 2 - 4, -h / 2 + 8, 8, 4);
+    ctx.fillStyle = '#16a34a';
+    ctx.fillRect(-w / 2 - 4, -h / 2 + 8, 9, 4);
 
-    // Legs / Boots
+    // Legs / Boots with walking animation
     const legOffset = player.isGrounded
       ? Math.sin(player.walkFrame) * 6
       : 4; // bent if jumping
 
     // Back leg
-    ctx.fillStyle = '#1e3a8a'; // Dark blue adventurer pants
-    ctx.fillRect(-6 - legOffset * 0.5, h / 2 - 14, 6, 10);
+    ctx.fillStyle = '#1e40af'; // Vibrant blue adventurer pants
+    ctx.fillRect(-6 - legOffset * 0.5, h / 2 - 14, 7, 10);
     ctx.fillStyle = '#451a03'; // Boot
-    ctx.fillRect(-7 - legOffset * 0.5, h / 2 - 5, 8, 6);
+    ctx.fillRect(-7 - legOffset * 0.5, h / 2 - 5, 9, 7);
 
     // Front leg
-    ctx.fillStyle = '#1d4ed8';
-    ctx.fillRect(1 + legOffset * 0.5, h / 2 - 14, 6, 10);
+    ctx.fillStyle = '#2563eb';
+    ctx.fillRect(1 + legOffset * 0.5, h / 2 - 14, 7, 10);
     ctx.fillStyle = '#5c2b09';
-    ctx.fillRect(1 + legOffset * 0.5, h / 2 - 5, 8, 6);
+    ctx.fillRect(1 + legOffset * 0.5, h / 2 - 5, 9, 7);
 
-    // Explorer Torso / Khaki Vest
-    ctx.fillStyle = '#d97706'; // Warm explorer shirt
+    // Explorer Torso / Khaki Vest with bright accents
+    ctx.fillStyle = '#ea580c'; // Vibrant explorer shirt
     ctx.beginPath();
-    ctx.roundRect(-w / 2 + 4, -h / 2 + 12, w - 8, 16, 4);
+    ctx.roundRect(-w / 2 + 3, -h / 2 + 12, w - 6, 17, 4);
     ctx.fill();
+    ctx.strokeStyle = '#9a3412';
+    ctx.lineWidth = 1;
+    ctx.stroke();
 
     // Utility belt with gold buckle
     ctx.fillStyle = '#451a03';
-    ctx.fillRect(-w / 2 + 4, -h / 2 + 24, w - 8, 4);
-    ctx.fillStyle = '#facc15';
-    ctx.fillRect(-2, -h / 2 + 23, 4, 6);
+    ctx.fillRect(-w / 2 + 3, -h / 2 + 24, w - 6, 4);
+    ctx.fillStyle = '#fde047';
+    ctx.fillRect(-2, -h / 2 + 23, 5, 6);
 
-    // Head / Face
-    ctx.fillStyle = '#fed7aa'; // Skin tone
+    // Head / Face (warm clear skin tone)
+    ctx.fillStyle = '#fed7aa'; // Clean bright peach skin
     ctx.beginPath();
-    ctx.arc(2, -h / 2 + 7, 9, 0, Math.PI * 2);
+    ctx.arc(2, -h / 2 + 7, 9.5, 0, Math.PI * 2);
     ctx.fill();
+    ctx.strokeStyle = '#ea580c';
+    ctx.lineWidth = 0.8;
+    ctx.stroke();
 
-    // Cartoon Explorer Eyes
+    // Cartoon Explorer Eyes (bright & expressive)
     ctx.fillStyle = '#ffffff';
     ctx.beginPath();
-    ctx.arc(5, -h / 2 + 6, 3.5, 0, Math.PI * 2);
+    ctx.arc(5, -h / 2 + 6, 3.8, 0, Math.PI * 2);
     ctx.fill();
     ctx.fillStyle = '#0f172a'; // Pupil looking forward
     ctx.beginPath();
-    ctx.arc(6, -h / 2 + 6, 1.8, 0, Math.PI * 2);
+    ctx.arc(6.2, -h / 2 + 6, 2, 0, Math.PI * 2);
+    ctx.fill();
+    // Tiny eye spark
+    ctx.fillStyle = '#ffffff';
+    ctx.beginPath();
+    ctx.arc(7, -h / 2 + 5, 0.8, 0, Math.PI * 2);
     ctx.fill();
 
     // Eyebrow and confident / focused smile
     ctx.strokeStyle = '#78350f';
-    ctx.lineWidth = 1.2;
+    ctx.lineWidth = 1.3;
     ctx.beginPath();
     ctx.moveTo(3, -h / 2 + 2);
-    ctx.lineTo(7, -h / 2 + 3);
+    ctx.lineTo(7.5, -h / 2 + 3);
     ctx.stroke();
 
     // Smile / mouth
@@ -559,24 +616,24 @@ export class GameRenderer {
     ctx.stroke();
 
     // Explorer Safari Hat (Iconic Pith Helmet)
-    ctx.fillStyle = '#d4d4d8';
-    ctx.strokeStyle = '#a1a1aa';
+    ctx.fillStyle = '#fef3c7'; // Cream safari hat
+    ctx.strokeStyle = '#d97706';
     ctx.lineWidth = 1.5;
     // Hat brim
     ctx.beginPath();
-    ctx.ellipse(2, -h / 2 + 2, 14, 4, 0, 0, Math.PI * 2);
+    ctx.ellipse(2, -h / 2 + 2, 15, 4.5, 0, 0, Math.PI * 2);
     ctx.fill();
     ctx.stroke();
     // Hat dome
-    ctx.fillStyle = '#e4e4e7';
+    ctx.fillStyle = '#fffbeb';
     ctx.beginPath();
-    ctx.arc(2, -h / 2 + 1, 9, Math.PI, 0);
+    ctx.arc(2, -h / 2 + 1, 9.5, Math.PI, 0);
     ctx.closePath();
     ctx.fill();
     ctx.stroke();
     // Red decorative band on hat
     ctx.fillStyle = '#dc2626';
-    ctx.fillRect(-6, -h / 2, 16, 2.5);
+    ctx.fillRect(-7, -h / 2, 18, 3);
 
     // Explorer Flashlight / Torch in hand
     const armAngle = player.isGrounded ? Math.cos(player.walkFrame) * 0.4 : -0.6;
@@ -584,19 +641,28 @@ export class GameRenderer {
     ctx.translate(w / 4, -h / 2 + 16);
     ctx.rotate(armAngle);
     // Arm
-    ctx.fillStyle = '#d97706';
-    ctx.fillRect(-2, 0, 5, 9);
+    ctx.fillStyle = '#ea580c';
+    ctx.fillRect(-2, 0, 5, 10);
     // Torch handle
     ctx.fillStyle = '#78350f';
-    ctx.fillRect(-1, 8, 3, 10);
+    ctx.fillRect(-1, 8, 3, 11);
     // Torch head
     ctx.fillStyle = '#fbbf24';
     ctx.fillRect(-3, 6, 7, 3);
-    // Torch flame
+    // Torch animated flame
+    const flameFlicker = Math.sin(Date.now() / 80) * 1.5;
     ctx.fillStyle = '#ea580c';
     ctx.beginPath();
     ctx.moveTo(-3, 6);
     ctx.lineTo(4, 6);
+    ctx.lineTo(0.5 + flameFlicker, -3);
+    ctx.closePath();
+    ctx.fill();
+    // Flame inner core
+    ctx.fillStyle = '#fef08a';
+    ctx.beginPath();
+    ctx.moveTo(-1.5, 6);
+    ctx.lineTo(2.5, 6);
     ctx.lineTo(0.5, 0);
     ctx.closePath();
     ctx.fill();
@@ -726,5 +792,126 @@ export class GameRenderer {
 
       ctx.restore();
     }
+  }
+
+  // Draw 3-second countdown before lava starts rising & alert banner
+  public drawLavaCountdown(lavaDelayTimer: number, flashTimer: number) {
+    const ctx = this.ctx;
+    ctx.save();
+
+    const centerX = this.width / 2;
+
+    if (lavaDelayTimer > 0) {
+      const seconds = Math.max(1, Math.ceil(lavaDelayTimer));
+      const fraction = lavaDelayTimer - Math.floor(lavaDelayTimer); // 0 to 1 for pop animation
+      const popScale = 1 + fraction * 0.18;
+
+      const cardW = 310;
+      const cardH = 88;
+      const cardX = centerX - cardW / 2;
+      const cardY = 55;
+
+      // Dark volcanic alert container with lava glow
+      ctx.shadowColor = 'rgba(234, 88, 12, 0.7)';
+      ctx.shadowBlur = 20;
+      ctx.fillStyle = 'rgba(17, 7, 3, 0.9)';
+      ctx.beginPath();
+      ctx.roundRect(cardX, cardY, cardW, cardH, 14);
+      ctx.fill();
+
+      // Border with warm gradient
+      ctx.shadowBlur = 0;
+      ctx.lineWidth = 2.5;
+      ctx.strokeStyle = '#f97316';
+      ctx.stroke();
+
+      // Top caution label
+      ctx.fillStyle = '#fbbf24';
+      ctx.font = 'bold 11px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('⚠️ ¡PREPÁRATE! LA LAVA SUBE EN', centerX, cardY + 20);
+
+      // Large animated countdown number
+      ctx.save();
+      ctx.translate(centerX, cardY + 48);
+      ctx.scale(popScale, popScale);
+
+      // Radial backlight
+      const numGlow = ctx.createRadialGradient(0, 0, 4, 0, 0, 32);
+      numGlow.addColorStop(0, 'rgba(254, 240, 138, 0.5)');
+      numGlow.addColorStop(1, 'rgba(234, 88, 12, 0)');
+      ctx.fillStyle = numGlow;
+      ctx.beginPath();
+      ctx.arc(0, 0, 32, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Number text
+      ctx.font = '900 36px Fredoka, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.strokeStyle = '#7c2d12';
+      ctx.lineWidth = 4;
+      ctx.strokeText(`${seconds}`, 0, 0);
+
+      const grad = ctx.createLinearGradient(0, -18, 0, 18);
+      grad.addColorStop(0, '#fef08a');
+      grad.addColorStop(0.5, '#f59e0b');
+      grad.addColorStop(1, '#ea580c');
+      ctx.fillStyle = grad;
+      ctx.fillText(`${seconds}`, 0, 0);
+      ctx.restore();
+
+      // Progress bar underneath
+      const barW = 200;
+      const barH = 6;
+      const barX = centerX - barW / 2;
+      const barY = cardY + cardH - 14;
+
+      // Bar track
+      ctx.fillStyle = '#292524';
+      ctx.beginPath();
+      ctx.roundRect(barX, barY, barW, barH, 3);
+      ctx.fill();
+
+      // Bar fill (drains down as timer decreases)
+      const fillW = Math.max(4, barW * (lavaDelayTimer / 3.0));
+      const barGrad = ctx.createLinearGradient(barX, 0, barX + fillW, 0);
+      barGrad.addColorStop(0, '#ef4444');
+      barGrad.addColorStop(0.6, '#f97316');
+      barGrad.addColorStop(1, '#fde047');
+      ctx.fillStyle = barGrad;
+      ctx.beginPath();
+      ctx.roundRect(barX, barY, fillW, barH, 3);
+      ctx.fill();
+
+    } else if (flashTimer > 0) {
+      // Flashing "¡¡LA LAVA ESTÁ SUBIENDO!!" alert
+      const isFlashBright = Math.sin(flashTimer * 16) > 0;
+      const bannerW = 340;
+      const bannerH = 46;
+      const bannerX = centerX - bannerW / 2;
+      const bannerY = 65;
+
+      ctx.shadowColor = 'rgba(239, 68, 68, 0.9)';
+      ctx.shadowBlur = 24;
+      ctx.fillStyle = isFlashBright ? 'rgba(185, 28, 28, 0.96)' : 'rgba(127, 29, 29, 0.92)';
+      ctx.beginPath();
+      ctx.roundRect(bannerX, bannerY, bannerW, bannerH, 12);
+      ctx.fill();
+
+      ctx.lineWidth = 2.5;
+      ctx.strokeStyle = isFlashBright ? '#fef08a' : '#ea580c';
+      ctx.stroke();
+
+      ctx.shadowBlur = 0;
+      ctx.fillStyle = '#ffffff';
+      ctx.font = '900 15px Fredoka, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('🔥 ¡¡LA LAVA ESTÁ SUBIENDO!! ¡ESCALA! 🔥', centerX, bannerY + bannerH / 2);
+    }
+
+    ctx.restore();
   }
 }
