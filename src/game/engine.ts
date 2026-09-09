@@ -23,10 +23,10 @@ export class GameEngine {
   private lavaY: number = 0;
   private cameraY: number = 0;
 
-  // Physics & Mechanics
+  // Physics & Mechanics (tuned for smooth, agile climbing)
   private gravity: number = 980; // px/s^2
-  private jumpForce: number = -520; // px/s
-  private moveSpeed: number = 290; // px/s
+  private jumpForce: number = -545; // px/s - responsive, satisfying jump height
+  private moveSpeed: number = 305; // px/s - smooth, agile horizontal control
   private rockTimer: number = 0;
   private lavaBubbleTimer: number = 0;
   private gameTime: number = 0;
@@ -89,8 +89,8 @@ export class GameEngine {
       isGrounded: true,
       facing: 'right',
       invulnerableTimer: 0,
-      lives: 3,
-      maxLives: 3,
+      lives: 4,
+      maxLives: 4,
       isAlive: true,
       walkFrame: 0,
     };
@@ -176,13 +176,16 @@ export class GameEngine {
   }
 
   // Level initialization and procedural generation
-  public initLevel(levelIdx: number, keepScoreAndLives: boolean = false) {
+  public initLevel(levelIdx: number, keepScore: boolean = false) {
     this.currentLevelIndex = levelIdx;
     this.currentLevel = LEVELS[levelIdx] || LEVELS[0];
     const worldH = this.currentLevel.worldHeight;
 
-    if (!keepScoreAndLives) {
-      this.player.lives = 3;
+    // In every level, the player always starts with the full 4 lives (4 hearts)
+    this.player.lives = 4;
+    this.player.maxLives = 4;
+
+    if (!keepScore) {
       this.totalScore = 0;
       this.gemsCollected = 0;
       this.rocksEvaded = 0;
@@ -238,29 +241,36 @@ export class GameEngine {
     let lastX = this.worldWidth / 2;
 
     // Step-by-step ascending platforms
+    const isLateLevel = this.currentLevelIndex >= 5; // Level 6 and 7 are noticeably more challenging!
+    const isEarlyLevel = this.currentLevelIndex <= 1; // Levels 1 and 2 are very gentle and wide
+
     while (currentY > 160) {
-      // Platform width varies from 95px to 160px based on level
-      const minW = this.currentLevelIndex === 0 ? 120 : this.currentLevelIndex === 1 ? 100 : 85;
-      const maxW = this.currentLevelIndex === 0 ? 175 : this.currentLevelIndex === 1 ? 140 : 125;
+      // Platform width: wide and forgiving in early levels, tighter in level 6+
+      const minW = isEarlyLevel ? 135 : isLateLevel ? 75 : 110;
+      const maxW = isEarlyLevel ? 185 : isLateLevel ? 110 : 150;
       const width = minW + Math.random() * (maxW - minW);
 
       // Distribute platforms across left, center, right to create fun jumping lines
-      const minX = 40;
-      const maxX = this.worldWidth - width - 40;
+      const minX = 35;
+      const maxX = this.worldWidth - width - 35;
       
-      // Keep next platform reachable from previous
-      let x = lastX + (Math.random() > 0.5 ? 1 : -1) * (140 + Math.random() * 120);
-      if (x < minX) x = minX + Math.random() * 60;
-      if (x > maxX) x = maxX - Math.random() * 60;
+      // Keep next platform comfortably reachable from previous
+      const xDistance = isLateLevel ? (130 + Math.random() * 120) : (100 + Math.random() * 85);
+      let x = lastX + (Math.random() > 0.5 ? 1 : -1) * xDistance;
+      if (x < minX) x = minX + Math.random() * 50;
+      if (x > maxX) x = maxX - Math.random() * 50;
       lastX = x;
 
       // Determine platform type
       let type: Platform['type'] = 'standard';
       const rand = Math.random();
 
-      if (this.currentLevel.crumblyPlatforms && rand < 0.28) {
+      const crumblyChance = isLateLevel ? 0.35 : 0.18;
+      const movingChance = isLateLevel ? 0.55 : 0.40;
+
+      if (this.currentLevel.crumblyPlatforms && rand < crumblyChance) {
         type = 'crumbly';
-      } else if (this.currentLevel.movingPlatforms && rand < 0.58) {
+      } else if (this.currentLevel.movingPlatforms && rand < movingChance) {
         type = 'moving';
       }
 
@@ -274,10 +284,12 @@ export class GameEngine {
       };
 
       if (type === 'moving') {
-        platform.movingSpeed = 60 + Math.random() * 70;
+        const baseSpeed = isLateLevel ? 85 : 45;
+        const varianceSpeed = isLateLevel ? 75 : 35;
+        platform.movingSpeed = baseSpeed + Math.random() * varianceSpeed;
         platform.direction = Math.random() > 0.5 ? 1 : -1;
-        platform.minX = Math.max(30, x - 100);
-        platform.maxX = Math.min(this.worldWidth - width - 30, x + 100);
+        platform.minX = Math.max(25, x - (isLateLevel ? 110 : 90));
+        platform.maxX = Math.min(this.worldWidth - width - 25, x + (isLateLevel ? 110 : 90));
       }
 
       this.platforms.push(platform);
@@ -297,8 +309,10 @@ export class GameEngine {
         });
       }
 
-      // Vertical distance between platforms (85px - 115px)
-      const stepY = 85 + Math.random() * 25;
+      // Vertical distance between platforms (gentle 72-90px in early levels for smooth climbing; 88-112px in level 6+)
+      const stepY = isLateLevel
+        ? (88 + Math.random() * 24)
+        : (72 + Math.random() * 18);
       currentY -= stepY;
     }
 
@@ -320,8 +334,13 @@ export class GameEngine {
     this.lavaDelayTimer = 3.0;
     this.lavaAlertFlashTimer = 0;
     this.lastBeepSecond = -1;
+    // Guarantee 4 lives (4 hearts) in every level
+    this.player.lives = 4;
+    this.player.maxLives = 4;
+    this.player.isAlive = true;
+    this.notifyStats();
     this.onStateChange(this.status);
-    this.onAnnouncement(`¡Nivel ${this.currentLevel.levelNumber}: ${this.currentLevel.name}! La lava empezará a subir en 3 segundos. ¡Prepárate!`);
+    this.onAnnouncement(`¡Nivel ${this.currentLevel.levelNumber}: ${this.currentLevel.name}! Tienes tus 4 corazones listos. La lava empezará a subir en 3 segundos.`);
 
     if (!this.animationFrameId) {
       this.loop(this.lastTime);

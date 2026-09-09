@@ -1,5 +1,5 @@
 import React from 'react';
-import { ArrowRight, RotateCcw, CheckCircle2, Sparkles, Gem } from 'lucide-react';
+import { ArrowRight, RotateCcw, CheckCircle2, Sparkles, Gem, Heart } from 'lucide-react';
 import { GameStats, LevelConfig } from '../types';
 import heroLogo from '../assets/images/explorer_volcano_hero_1788875674693.jpg';
 
@@ -96,10 +96,16 @@ export const VictoryModal: React.FC<VictoryModalProps> = ({
         {/* Next Level Preview */}
         {!isFinalVictory && nextLevel && (
           <div className="w-full bg-black/80 border border-orange-600/60 p-2.5 mb-3 text-left shadow-md">
-            <span className="text-[9px] uppercase font-black text-orange-500 block tracking-wider">
-              Próximo Desafío: Nivel {nextLevel.levelNumber} - {nextLevel.name}
-            </span>
-            <span className="text-[11px] text-stone-300 block mt-0.5">
+            <div className="flex items-center justify-between gap-2">
+              <span className="text-[9px] uppercase font-black text-orange-500 block tracking-wider">
+                Próximo Desafío: Nivel {nextLevel.levelNumber} - {nextLevel.name}
+              </span>
+              <span className="inline-flex items-center gap-1 text-[10px] font-bold text-red-400 bg-red-950/70 border border-red-500/50 px-1.5 py-0.5 rounded shrink-0">
+                <Heart className="w-3 h-3 fill-red-500 text-red-500" />
+                <span>4 Corazones</span>
+              </span>
+            </div>
+            <span className="text-[11px] text-stone-300 block mt-1">
               {nextLevel.description}
             </span>
           </div>

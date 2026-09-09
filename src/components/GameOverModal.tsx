@@ -1,5 +1,5 @@
 import React from 'react';
-import { RotateCcw, Play, Trophy, Mountain, Gem, Zap } from 'lucide-react';
+import { RotateCcw, Play, Trophy, Mountain, Gem, Zap, Heart } from 'lucide-react';
 import { GameStats } from '../types';
 import heroLogo from '../assets/images/explorer_volcano_hero_1788875674693.jpg';
 
@@ -82,6 +82,12 @@ export const GameOverModal: React.FC<GameOverModalProps> = ({
               <span className="text-xs font-black text-white font-mono">{stats.rocksEvaded}</span>
             </div>
           </div>
+        </div>
+
+        {/* 4 Hearts info badge */}
+        <div className="flex items-center justify-center gap-1.5 bg-black/70 border border-red-500/40 px-3 py-1 mb-3 rounded text-[11px] text-stone-200">
+          <Heart className="w-3.5 h-3.5 fill-red-500 text-red-500" />
+          <span>Inicias con los <strong>4 corazones</strong> completos</span>
         </div>
 
         {/* Action Buttons */}

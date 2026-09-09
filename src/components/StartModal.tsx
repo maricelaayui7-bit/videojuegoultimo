@@ -96,10 +96,10 @@ export const StartModal: React.FC<StartModalProps> = ({ onStart }) => {
             <Heart className="w-4 h-4 text-red-500 shrink-0 mt-0.5 fill-red-500" />
             <div>
               <span className="text-[10px] font-black uppercase tracking-tight text-orange-400 block">
-                3 Vidas
+                4 Vidas por Nivel
               </span>
               <span className="text-[10px] text-stone-300 leading-tight">
-                Evita la lava y rocas
+                4 corazones en cada etapa
               </span>
             </div>
           </div>
@@ -108,10 +108,10 @@ export const StartModal: React.FC<StartModalProps> = ({ onStart }) => {
             <ShieldAlert className="w-4 h-4 text-amber-500 shrink-0 mt-0.5" />
             <div>
               <span className="text-[10px] font-black uppercase tracking-tight text-orange-400 block">
-                3 Niveles
+                7 Niveles
               </span>
               <span className="text-[10px] text-stone-300 leading-tight">
-                Escala hasta la meta
+                ¡Dificultad alta en Nivel 6!
               </span>
             </div>
           </div>

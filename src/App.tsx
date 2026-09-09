@@ -15,7 +15,7 @@ export default function App() {
   const engineRef = useRef<GameEngine | null>(null);
 
   const [gameStatus, setGameStatus] = useState<GameStatus>('start');
-  const [lives, setLives] = useState<number>(3);
+  const [lives, setLives] = useState<number>(4);
   const [isMuted, setIsMuted] = useState<boolean>(false);
   const [lavaDistance, setLavaDistance] = useState<number>(50);
   const [announcement, setAnnouncement] = useState<string>('Bienvenido a Escape del Volcán');

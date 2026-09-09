@@ -486,23 +486,23 @@ export class GameRenderer {
     ctx.arc(0, 0, 95, 0, Math.PI * 2);
     ctx.fill();
 
-    // 2. High-contrast character rim highlight so the person pops against dark rocks
-    ctx.strokeStyle = 'rgba(251, 191, 36, 0.55)';
+    // 2. High-contrast character rim highlight so the green explorer pops against dark rocks
+    ctx.strokeStyle = 'rgba(74, 222, 128, 0.75)';
     ctx.lineWidth = 2.5;
     ctx.beginPath();
     ctx.roundRect(-w / 2 - 4, -h / 2 - 1, w + 8, h + 5, 8);
     ctx.stroke();
 
-    // 3. Player Beacon / "TÚ" indicator so the person is 100% visible and unmistakable
+    // 3. Player Beacon / "TÚ" indicator in green explorer style
     const markerBob = Math.sin(Date.now() / 220) * 3;
     const markerY = -h / 2 - 18 + markerBob;
 
     // Small beacon badge "TÚ"
-    ctx.fillStyle = '#b45309';
+    ctx.fillStyle = '#15803d';
     ctx.beginPath();
     ctx.roundRect(-10, markerY - 12, 20, 11, 3);
     ctx.fill();
-    ctx.strokeStyle = '#fef08a';
+    ctx.strokeStyle = '#86efac';
     ctx.lineWidth = 1;
     ctx.stroke();
     ctx.fillStyle = '#ffffff';
@@ -512,7 +512,7 @@ export class GameRenderer {
     ctx.fillText('TÚ', 0, markerY - 6);
 
     // Downward pointing arrow
-    ctx.fillStyle = '#fbbf24';
+    ctx.fillStyle = '#4ade80';
     ctx.beginPath();
     ctx.moveTo(0, markerY + 4);
     ctx.lineTo(-4, markerY);
@@ -533,9 +533,9 @@ export class GameRenderer {
       ctx.fill();
     }
 
-    // Backpack on back
-    ctx.fillStyle = '#854d0e'; // Rich leather brown
-    ctx.strokeStyle = '#451a03';
+    // Backpack on back (forest/olive green explorer pack)
+    ctx.fillStyle = '#284e1b';
+    ctx.strokeStyle = '#14532d';
     ctx.lineWidth = 1.5;
     ctx.beginPath();
     ctx.roundRect(-w / 2 - 4, -h / 2 + 12, 9, 20, 3);
@@ -543,37 +543,42 @@ export class GameRenderer {
     ctx.stroke();
 
     // Bedroll / sleeping mat on top of backpack
-    ctx.fillStyle = '#16a34a';
+    ctx.fillStyle = '#4ade80';
     ctx.fillRect(-w / 2 - 4, -h / 2 + 8, 9, 4);
 
-    // Legs / Boots with walking animation
+    // Legs / Boots with walking animation - Green Explorer Cargo Pants
     const legOffset = player.isGrounded
       ? Math.sin(player.walkFrame) * 6
       : 4; // bent if jumping
 
-    // Back leg
-    ctx.fillStyle = '#1e40af'; // Vibrant blue adventurer pants
+    // Back leg (deep forest green trousers)
+    ctx.fillStyle = '#166534';
     ctx.fillRect(-6 - legOffset * 0.5, h / 2 - 14, 7, 10);
-    ctx.fillStyle = '#451a03'; // Boot
+    ctx.fillStyle = '#1c1917'; // Rugged dark boot
     ctx.fillRect(-7 - legOffset * 0.5, h / 2 - 5, 9, 7);
 
-    // Front leg
-    ctx.fillStyle = '#2563eb';
+    // Front leg (vibrant emerald green trousers)
+    ctx.fillStyle = '#22c55e';
     ctx.fillRect(1 + legOffset * 0.5, h / 2 - 14, 7, 10);
-    ctx.fillStyle = '#5c2b09';
+    ctx.fillStyle = '#292524';
     ctx.fillRect(1 + legOffset * 0.5, h / 2 - 5, 9, 7);
 
-    // Explorer Torso / Khaki Vest with bright accents
-    ctx.fillStyle = '#ea580c'; // Vibrant explorer shirt
+    // Explorer Torso / Vest - Vibrant Jungle Green Jacket
+    ctx.fillStyle = '#16a34a';
     ctx.beginPath();
     ctx.roundRect(-w / 2 + 3, -h / 2 + 12, w - 6, 17, 4);
     ctx.fill();
-    ctx.strokeStyle = '#9a3412';
-    ctx.lineWidth = 1;
+    ctx.strokeStyle = '#14532d';
+    ctx.lineWidth = 1.2;
     ctx.stroke();
 
+    // Explorer pockets & zipper detail
+    ctx.fillStyle = '#15803d';
+    ctx.fillRect(-w / 2 + 5, -h / 2 + 14, 4, 4);
+    ctx.fillRect(w / 2 - 9, -h / 2 + 14, 4, 4);
+
     // Utility belt with gold buckle
-    ctx.fillStyle = '#451a03';
+    ctx.fillStyle = '#3f220d';
     ctx.fillRect(-w / 2 + 3, -h / 2 + 24, w - 6, 4);
     ctx.fillStyle = '#fde047';
     ctx.fillRect(-2, -h / 2 + 23, 5, 6);
@@ -583,7 +588,7 @@ export class GameRenderer {
     ctx.beginPath();
     ctx.arc(2, -h / 2 + 7, 9.5, 0, Math.PI * 2);
     ctx.fill();
-    ctx.strokeStyle = '#ea580c';
+    ctx.strokeStyle = '#16a34a';
     ctx.lineWidth = 0.8;
     ctx.stroke();
 
@@ -615,7 +620,7 @@ export class GameRenderer {
     ctx.arc(5, -h / 2 + 9, 2.5, 0.1, Math.PI * 0.9);
     ctx.stroke();
 
-    // Explorer Safari Hat (Iconic Pith Helmet)
+    // Explorer Safari Hat (Iconic Pith Helmet with green band)
     ctx.fillStyle = '#fef3c7'; // Cream safari hat
     ctx.strokeStyle = '#d97706';
     ctx.lineWidth = 1.5;
@@ -631,8 +636,8 @@ export class GameRenderer {
     ctx.closePath();
     ctx.fill();
     ctx.stroke();
-    // Red decorative band on hat
-    ctx.fillStyle = '#dc2626';
+    // Green decorative band on hat
+    ctx.fillStyle = '#16a34a';
     ctx.fillRect(-7, -h / 2, 18, 3);
 
     // Explorer Flashlight / Torch in hand
@@ -640,22 +645,25 @@ export class GameRenderer {
     ctx.save();
     ctx.translate(w / 4, -h / 2 + 16);
     ctx.rotate(armAngle);
-    // Arm
-    ctx.fillStyle = '#ea580c';
+    // Green Jacket Sleeve Arm
+    ctx.fillStyle = '#16a34a';
     ctx.fillRect(-2, 0, 5, 10);
+    // Hand skin
+    ctx.fillStyle = '#fed7aa';
+    ctx.fillRect(-2, 8, 4, 3);
     // Torch handle
     ctx.fillStyle = '#78350f';
-    ctx.fillRect(-1, 8, 3, 11);
+    ctx.fillRect(-1, 9, 3, 10);
     // Torch head
     ctx.fillStyle = '#fbbf24';
-    ctx.fillRect(-3, 6, 7, 3);
+    ctx.fillRect(-3, 7, 7, 3);
     // Torch animated flame
     const flameFlicker = Math.sin(Date.now() / 80) * 1.5;
     ctx.fillStyle = '#ea580c';
     ctx.beginPath();
-    ctx.moveTo(-3, 6);
-    ctx.lineTo(4, 6);
-    ctx.lineTo(0.5 + flameFlicker, -3);
+    ctx.moveTo(-3, 7);
+    ctx.lineTo(4, 7);
+    ctx.lineTo(0.5 + flameFlicker, -2);
     ctx.closePath();
     ctx.fill();
     // Flame inner core
